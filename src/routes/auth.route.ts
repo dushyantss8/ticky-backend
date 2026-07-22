@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { AuthService } from "../services/auth.service";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
+
 export const authRouter = Router();
 
 /**
@@ -40,6 +42,18 @@ authRouter.post("/login", async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: { accessToken },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/** Protected routes */
+authRouter.get("/me", AuthMiddleware.authenticate, async (req, res, next) => {
+  try {
+    res.status(200).json({
+      success: true,
+      data: { user: req.user },
     });
   } catch (error) {
     next(error);
